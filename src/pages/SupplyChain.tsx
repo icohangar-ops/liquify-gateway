@@ -5,7 +5,7 @@ import YieldProvenance from "@/components/YieldProvenance";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { MOCK_STAKING_EVENTS, MOCK_YIELD_PROVENANCE } from "@/lib/liquify";
+import { useLiquifyEvents } from "@/hooks/useLiquifyNetwork";
 
 const yieldSteps = [
   { id: "YS-001", from: "User BNB", to: "lstBNB Pool", amount: "2,500 BNB", validator: "Liquify Protocol", timestamp: "2026-04-02 09:14", status: "confirmed" },
@@ -15,7 +15,10 @@ const yieldSteps = [
   { id: "YS-005", from: "Yield Distribution", to: "User Claim", amount: "12.8 lstBNB", validator: "User Wallet", timestamp: "2026-04-02 12:05", status: "claimed" },
 ];
 
-const SupplyChain = () => (
+const SupplyChain = () => {
+  const { data: stakingEvents = [] } = useLiquifyEvents();
+
+  return (
   <div className="px-6 py-6 space-y-6">
     <div className="flex items-center gap-3">
       <Route className="w-5 h-5 text-primary" />
@@ -72,7 +75,7 @@ const SupplyChain = () => (
       <TabsContent value="audit">
         <div className="rounded-lg border border-border bg-card p-6 space-y-4">
           <p className="text-xs text-muted-foreground">Immutable audit trail from staking events</p>
-          {MOCK_STAKING_EVENTS.map((e, i) => (
+          {stakingEvents.map((e, i) => (
             <div key={e.id} className="flex items-start gap-3 border-b border-border/50 pb-3 last:border-0">
               <div className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" />
               <div className="flex-1">
@@ -89,6 +92,7 @@ const SupplyChain = () => (
       </TabsContent>
     </Tabs>
   </div>
-);
+  );
+};
 
 export default SupplyChain;

@@ -4,7 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { MOCK_RISK_ASSESSMENTS, MOCK_VALIDATORS } from "@/lib/liquify";
+import {
+  useLiquifyRiskAssessments,
+  useLiquifyValidators,
+} from "@/hooks/useLiquifyNetwork";
 
 const policies = [
   { id: "POL-001", name: "Downtime Threshold ≤1h/24h", scope: "All Validators", enforcement: "Auto-jail", status: "active" },
@@ -15,7 +18,8 @@ const policies = [
 ];
 
 const Compliance = () => {
-  const risks = MOCK_RISK_ASSESSMENTS;
+  const { data: risks = [] } = useLiquifyRiskAssessments();
+  const { data: validators = [] } = useLiquifyValidators();
   const healthyCount = risks.filter(r => r.status === "healthy").length;
   const flaggedCount = risks.filter(r => r.status !== "healthy").length;
 
@@ -63,7 +67,7 @@ const Compliance = () => {
               </TableHeader>
               <TableBody>
                 {risks.map((r) => {
-                  const validator = MOCK_VALIDATORS.find(v => v.id === r.validatorId);
+                  const validator = validators.find(v => v.id === r.validatorId);
                   return (
                     <TableRow key={r.validatorId}>
                       <TableCell className="text-sm font-medium">{validator?.name || r.validatorId}</TableCell>

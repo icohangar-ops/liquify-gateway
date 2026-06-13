@@ -1,6 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { ShieldCheck, AlertTriangle, XCircle } from "lucide-react";
-import { MOCK_RISK_ASSESSMENTS, MOCK_VALIDATORS } from "@/lib/liquify";
+import {
+  useLiquifyRiskAssessments,
+  useLiquifyValidators,
+} from "@/hooks/useLiquifyNetwork";
 
 const statusConfig = {
   healthy: { icon: ShieldCheck, label: "Healthy", variant: "compliant" as const },
@@ -9,8 +12,10 @@ const statusConfig = {
 };
 
 const RiskPanel = () => {
+  const { data: risks = [] } = useLiquifyRiskAssessments();
+  const { data: validators = [] } = useLiquifyValidators();
   // Show 3 representative risk items: healthy, warning, critical
-  const displayRisks = MOCK_RISK_ASSESSMENTS.filter((r) =>
+  const displayRisks = risks.filter((r) =>
     ["healthy", "warning", "critical"].includes(r.status)
   );
 
@@ -29,7 +34,7 @@ const RiskPanel = () => {
         {displayRisks.map((risk) => {
           const config = statusConfig[risk.status];
           const Icon = config.icon;
-          const validator = MOCK_VALIDATORS.find((v) => v.id === risk.validatorId);
+          const validator = validators.find((v) => v.id === risk.validatorId);
           return (
             <div
               key={risk.validatorId}

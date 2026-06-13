@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { MOCK_YIELD_PROVENANCE } from "@/lib/liquify";
+import { useLiquifyYieldProvenance } from "@/hooks/useLiquifyNetwork";
 
 const statusConfig = {
   active: { label: "Active", color: "border-success bg-success/30" },
@@ -8,7 +8,7 @@ const statusConfig = {
 };
 
 const YieldProvenance = () => {
-  const nodes = MOCK_YIELD_PROVENANCE;
+  const { data: nodes = [] } = useLiquifyYieldProvenance(undefined);
 
   return (
     <div className="glass-panel p-5">

@@ -5,13 +5,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { MOCK_POSITIONS, MOCK_STAKING_EVENTS, MOCK_VALIDATORS } from "@/lib/liquify";
+import {
+  useLiquifyPositions,
+  useLiquifyEvents,
+  useLiquifyValidators,
+} from "@/hooks/useLiquifyNetwork";
 
 const statusColor = { active: "compliant" as const, unbonding: "review" as const, pending: "nonCompliant" as const };
 
 const Assets = () => {
-  const positions = MOCK_POSITIONS;
-  const events = MOCK_STAKING_EVENTS;
+  const { data: positions = [] } = useLiquifyPositions(undefined);
+  const { data: events = [] } = useLiquifyEvents();
+  const { data: validators = [] } = useLiquifyValidators();
 
   return (
     <div className="px-6 py-6 space-y-6">
@@ -49,7 +54,7 @@ const Assets = () => {
               </TableHeader>
               <TableBody>
                 {positions.map((p) => {
-                  const validator = MOCK_VALIDATORS.find((v) => v.id === p.validatorId);
+                  const validator = validators.find((v) => v.id === p.validatorId);
                   return (
                     <TableRow key={p.validatorId}>
                       <TableCell className="font-medium text-sm">{validator?.name || p.validatorId}</TableCell>

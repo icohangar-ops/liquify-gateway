@@ -5,10 +5,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { MOCK_STAKING_EVENTS } from "@/lib/liquify";
+import { useLiquifyEvents } from "@/hooks/useLiquifyNetwork";
 
 const Events = () => {
-  const events = MOCK_STAKING_EVENTS;
+  const { data: events = [] } = useLiquifyEvents();
 
   const typeColorMap: Record<string, "compliant" | "review" | "liquify" | "nonCompliant"> = {
     stake: "compliant",

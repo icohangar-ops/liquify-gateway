@@ -1,9 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Server, Blocks, Wallet } from "lucide-react";
-import { MOCK_VALIDATORS } from "@/lib/liquify";
+import { useLiquifyValidators } from "@/hooks/useLiquifyNetwork";
 
 const ValidatorRegistry = () => {
-  const validators = MOCK_VALIDATORS.slice(0, 4);
+  const { data: allValidators = [] } = useLiquifyValidators();
+  const validators = allValidators.slice(0, 4);
 
   return (
     <div className="glass-panel p-5">
@@ -15,7 +16,7 @@ const ValidatorRegistry = () => {
           </p>
         </div>
         <Badge variant="liquify" className="text-[10px] font-mono">
-          {MOCK_VALIDATORS.length} Validators
+          {allValidators.length} Validators
         </Badge>
       </div>
 

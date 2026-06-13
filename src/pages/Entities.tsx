@@ -5,10 +5,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { MOCK_VALIDATORS } from "@/lib/liquify";
+import { useLiquifyValidators } from "@/hooks/useLiquifyNetwork";
 
 const Entities = () => {
-  const validators = MOCK_VALIDATORS;
+  const { data: validators = [] } = useLiquifyValidators();
 
   return (
     <div className="px-6 py-6 space-y-6">

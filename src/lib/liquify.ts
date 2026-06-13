@@ -1,7 +1,24 @@
 // Liquify Indexer API Service Layer
 // Replaces Stellar SDK calls with fetch calls to Liquify Indexer
 
+import { safeFetch } from "./resilience";
+
 const LIQUIFY_INDEXER_BASE_URL = "https://indexer.liquify.io/api/v1";
+
+// Resilience policy for every outbound Indexer call: a 10s per-attempt timeout
+// (AbortController, enforced by safeFetch) plus exponential backoff + jitter on
+// transient 429/5xx/network failures, with an SSRF allowlist that fails closed.
+const INDEXER_HOST = "indexer.liquify.io";
+const FETCH_OPTS = {
+  timeoutMs: 10_000,
+  maxAttempts: 3,
+  allowlist: [INDEXER_HOST] as const,
+} as const;
+
+/** fetch wrapper with a 10s timeout + retry/backoff for all Indexer reads. */
+async function indexerFetch(path: string): Promise<Response> {
+  return safeFetch(`${LIQUIFY_INDEXER_BASE_URL}${path}`, FETCH_OPTS);
+}
 
 // --- Types ---
 export interface ValidatorData {
@@ -76,37 +93,37 @@ export interface YieldProvenanceNode {
 // --- API Functions ---
 
 export async function getNetworkMetrics(): Promise<NetworkMetrics> {
-  const response = await fetch(`${LIQUIFY_INDEXER_BASE_URL}/network/metrics`);
+  const response = await indexerFetch(`/network/metrics`);
   if (!response.ok) throw new Error("Failed to fetch network metrics");
   return response.json();
 }
 
 export async function getValidators(): Promise<ValidatorData[]> {
-  const response = await fetch(`${LIQUIFY_INDEXER_BASE_URL}/validators`);
+  const response = await indexerFetch(`/validators`);
   if (!response.ok) throw new Error("Failed to fetch validators");
   return response.json();
 }
 
 export async function getUserPositions(walletAddress: string): Promise<StakingPosition[]> {
-  const response = await fetch(`${LIQUIFY_INDEXER_BASE_URL}/positions/${walletAddress}`);
+  const response = await indexerFetch(`/positions/${walletAddress}`);
   if (!response.ok) throw new Error("Failed to fetch user positions");
   return response.json();
 }
 
 export async function getValidatorRisk(validatorId: string): Promise<RiskAssessment> {
-  const response = await fetch(`${LIQUIFY_INDEXER_BASE_URL}/validators/${validatorId}/risk`);
+  const response = await indexerFetch(`/validators/${validatorId}/risk`);
   if (!response.ok) throw new Error("Failed to fetch validator risk");
   return response.json();
 }
 
 export async function getStakingEvents(limit = 50): Promise<YieldEvent[]> {
-  const response = await fetch(`${LIQUIFY_INDEXER_BASE_URL}/events?limit=${limit}`);
+  const response = await indexerFetch(`/events?limit=${limit}`);
   if (!response.ok) throw new Error("Failed to fetch staking events");
   return response.json();
 }
 
 export async function getYieldProvenance(walletAddress: string): Promise<YieldProvenanceNode[]> {
-  const response = await fetch(`${LIQUIFY_INDEXER_BASE_URL}/provenance/${walletAddress}`);
+  const response = await indexerFetch(`/provenance/${walletAddress}`);
   if (!response.ok) throw new Error("Failed to fetch yield provenance");
   return response.json();
 }

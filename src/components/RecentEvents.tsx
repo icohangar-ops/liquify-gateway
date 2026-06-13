@@ -1,5 +1,5 @@
 import { ArrowDownToLine, ArrowUpFromLine, Coins, ArrowLeftRight, ShieldAlert, TriangleAlert } from "lucide-react";
-import { MOCK_STAKING_EVENTS } from "@/lib/liquify";
+import { useLiquifyEvents } from "@/hooks/useLiquifyNetwork";
 
 const iconMap = {
   stake: ArrowDownToLine,
@@ -20,7 +20,7 @@ const colorMap = {
 };
 
 const RecentEvents = () => {
-  const events = MOCK_STAKING_EVENTS;
+  const { data: events = [] } = useLiquifyEvents();
 
   return (
     <div className="glass-panel p-5">
